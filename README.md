@@ -66,4 +66,4 @@ I'm using this project as a learning resource to understand how to build React a
 
 - [Vite Documentation](https://vitejs.dev/) - Fast and modern frontend tooling.
 - [React Documentation](https://react.dev/) - Declarative, component-based library for building UIs.
-- \[TypeScript Documentation]\(h
+- [TypeScript Documentation](https://www.typescriptlang.org/) - Type-safe JavaScript at scale.
