@@ -1,8 +1,13 @@
 import { useState } from "react";
+import { Results } from "./results";
 
 export const Quiz = () => {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const initialAnswer: (string | null)[] = [null, null, null];
+  const [UserAnswer, setUserAnswer] =
+    useState<(string | null)[]>(initialAnswer);
+  const [isQuizCompleted, setIsQuizCompleted] = useState(false);
+
   const questionBank = [
     {
       question: "what is the capital of France?",
@@ -21,38 +26,59 @@ export const Quiz = () => {
     },
   ];
 
-  function HandleSelectOption(selectedOption: string) {
-    setSelectedOption(selectedOption);
-  }
+  const HandleAnswerOption = (selectedOption: string) => {
+    const newUserAnswer = [...UserAnswer];
+    newUserAnswer[currentQuestion] = selectedOption;
+    setUserAnswer(newUserAnswer);
+  };
 
-  function HandleAnswerOption(selectedOption: string) {
-    HandleSelectOption(selectedOption);
-    if (selectedOption === questionBank[currentQuestionIndex].answer) {
-      console.log("Correct!");
-    } else {
-      console.log("Incorrect!");
+  const restartQuiz = () => {
+    setCurrentQuestion(0);
+    setUserAnswer(initialAnswer);
+    setIsQuizCompleted(false);
+  };
+  const goNext = () => {
+    if (currentQuestion === questionBank.length - 1) {
+      setIsQuizCompleted(true);
+      return;
     }
+    setCurrentQuestion(currentQuestion + 1);
+  };
+  const goPrev = () => {
+    setCurrentQuestion(currentQuestion - 1);
+  };
+  const selectedAnswer = UserAnswer[currentQuestion];
+
+  if (isQuizCompleted) {
+    return (
+      <Results
+        userAnswer={UserAnswer}
+        questionBank={questionBank}
+        restartQuiz={restartQuiz}
+      />
+    );
   }
-  function HandleNextQuestion() {}
-  function HandlePreviousQuestion() {}
 
   return (
     <div>
-      <h2>Question {currentQuestionIndex + 1}</h2>
-      <h2>{questionBank[currentQuestionIndex].question}</h2>
-      {questionBank[currentQuestionIndex].options.map((option, index) => (
+      <h2>Question {currentQuestion + 1}</h2>
+      <h2>{questionBank[currentQuestion].question}</h2>
+      {questionBank[currentQuestion].options.map((option, index) => (
         <button
-          className="option"
+          className={"option" + (selectedAnswer === option ? " selected" : "")}
           onClick={() => HandleAnswerOption(option)}
           key={index}
         >
           {option}
         </button>
       ))}
-      {selectedOption !== "" && <p>Option Selected: {selectedOption}</p>}
       <div className="nav-buttons">
-        <button onClick={() => HandlePreviousQuestion()}>Previous</button>
-        <button onClick={() => HandleNextQuestion()}>Next</button>
+        <button onClick={() => goPrev()} disabled={currentQuestion === 0}>
+          Previous
+        </button>
+        <button onClick={() => goNext()} disabled={!selectedAnswer}>
+          {currentQuestion === questionBank.length - 1 ? "Finish quiz" : "Next"}
+        </button>
       </div>
     </div>
   );
